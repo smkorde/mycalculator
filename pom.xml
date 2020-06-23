@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>ETA</groupId>
+	<artifactId>Calculator</artifactId>
+	<packaging>war</packaging>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>calculator</name>
+	<url>http://calculator</url>
+	<properties>
+		<sonar.java.spotbugs.reportPaths>./target/spotbugsXml.xml</sonar.java.spotbugs.reportPaths>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.1.0</version>
+		</dependency>
+		<!-- Added for SCA-->
+		<dependency>
+    <groupId>commons-collections</groupId>
+    <artifactId>commons-collections</artifactId>
+    <version>3.2.1</version>
+</dependency>
+		<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-webmvc</artifactId>
+    <version>3.2.4.RELEASE</version>
+</dependency>
+		<!-- https://mvnrepository.com/artifact/com.github.daggerok.sonar/sonar-quality-gates-build-breaker -->
+<dependency>
+    <groupId>com.github.daggerok.sonar</groupId>
+    <artifactId>sonar-quality-gates-build-breaker</artifactId>
+    <version>1.0.1</version>
+    <type>pom</type>
+</dependency>
+
+	</dependencies>
+
+	<build>
+		<finalName>calculator</finalName>
+		<plugins>
+
+<plugin>
+                <groupId>com.github.daggerok.sonar</groupId>
+                <artifactId>sonar-breaker-maven-plugin</artifactId>
+                
+                <configuration>
+                    <!-- shorter parameters aliases:
+                    <delay>1</delay>
+                    <retry>100</retry>
+                    <standalone>false</standalone>
+                    <allowFailure>false</allowFailure>
+                    <metricsExcludes>new_coverage,new_violations</metricsExcludes>
+                    <metricsIncludes>new_coverage,new_violations</metricsIncludes>
+                    <projectBaseDir>${maven.multiModuleProjectDirectory}</projectBaseDir>
+                    <metadataFilePath>${maven.multiModuleProjectDirectory}/target/sonar/report-task.txt</metadataFilePath>
+                    -->
+                    <!-- parameters:
+                    <sonarBreakerDelay>1</sonarBreakerDelay>
+                    <sonarBreakerRetry>100</sonarBreakerRetry>
+                    <sonarBreakerStandalone>false</sonarBreakerStandalone>
+                    <sonarProjectBaseDir>${maven.multiModuleProjectDirectory}</sonarProjectBaseDir>
+                    <sonarBreakerMetricsExcludes>new_coverage,new_violations</sonarBreakerMetricsExcludes>
+                    <sonarBreakerMetricsIncludes>new_coverage,new_violations</sonarBreakerMetricsIncludes>
+                    <sonarScannerMetadataFilePath>${maven.multiModuleProjectDirectory}/target/sonar/report-task.txt</sonarScannerMetadataFilePath>
+                    -->
+                </configuration>
+            </plugin>
+			
+			<plugin>
+				<groupId>com.github.spotbugs</groupId>
+				<artifactId>spotbugs-maven-plugin</artifactId>
+				<version>3.1.8</version>
+				<configuration>
+					<effort>Max</effort>
+					<threshold>Low</threshold>
+					<failOnError>true</failOnError>
+					<maxAllowedViolations>20</maxAllowedViolations>
+					<!--<excludeFilterFile>spotbugsrulefilter.xml</excludeFilterFile>-->
+					<includeTests>false</includeTests>
+					<plugins>
+						<plugin>
+							<groupId>com.h3xstream.findsecbugs</groupId>
+							<artifactId>findsecbugs-plugin</artifactId>
+							<version>LATEST</version> <!-- Auto-update to the latest stable -->
+						</plugin>
+					</plugins>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.owasp</groupId>
+				<artifactId>dependency-check-maven</artifactId>
+				<version>5.3.0</version>
+				<configuration>
+					<!--<cveUrlModified>https://www.lhorn.de/nist/nvdcve-1.0-modified.json.gz</cveUrlModified> 
+						<cveUrlBase>https://www.lhorn.de/nist/nvdcve-1.0-%d.json.gz</cveUrlBase> -->
+				<failBuildOnCVSS>8</failBuildOnCVSS>
+					<formats>XML,HTML</formats>
+					
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<!--Runs dependency-check against the project and generates a report. 
+								https://jeremylong.github.io/DependencyCheck/dependency-check-maven/configuration.html -->
+							<goal>check</goal>
+						</goals>
+
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>com.worksap.tools</groupId>
+				<artifactId>incremental-analysis-maven-plugin</artifactId>
+				<version>1.1.0</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>3.7.1</version>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>3.0.0</version>
+			</plugin>
+			<plugin>
+				<groupId>org.sonarsource.scanner.maven</groupId>
+				<artifactId>sonar-maven-plugin</artifactId>
+				<version>3.2</version>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.7.9</version>
+				<executions>
+					<execution>
+						<id>default-prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>default-report</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>default-check</id>
+						<goals>
+							<goal>check</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<!-- implementation is needed only for Maven 2 -->
+								<rule implementation="org.jacoco.maven.RuleConfiguration">
+									<element>BUNDLE</element>
+									<limits>
+										<!-- implementation is needed only for Maven 2 -->
+										<limit implementation="org.jacoco.report.check.Limit">
+											<counter>COMPLEXITY</counter>
+											<value>COVEREDRATIO</value>
+											<minimum>0.03</minimum>
+										</limit>
+									</limits>
+								</rule>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			 <plugin>
+                <groupId>com.contrastsecurity</groupId>
+                <artifactId>contrast-maven-plugin</artifactId>
+                <version>2.6</version>
+                <executions>
+                    <execution>
+                        <id>install-contrast-jar</id>
+                        <goals>
+                            <goal>install</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>verify-with-contrast</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <username>agent_e6c34526-271d-4fb6-80e2-1d59e5576843@SudhirsOrg</username>
+                    <apiKey>Un9KWNo5bv838E8xLHlxcaeKjZv6tB2G</apiKey>
+                    <serviceKey>9RD372OMIA0OPZXW</serviceKey>
+                    <apiUrl>https://ce.contrastsecurity.com/Contrast</apiUrl>
+                    <orgUuid>e6c34526-271d-4fb6-80e2-1d59e5576843</orgUuid>
+                    <appName>Calculator</appName>
+                    <appId>bc3028e6-82ac-410f-b9c7-13573d33cb94</appId>
+                    <serverName>MyServerName</serverName>
+                    <minSeverity>High</minSeverity>
+                </configuration>
+            </plugin>
+			
+		</plugins>
+
+	</build>
+
+	<reporting>
+		<plugins>
+		<plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-project-info-reports-plugin</artifactId>
+            <version>2.9</version>
+            <reportSets>
+                <reportSet>
+                    <configuration>
+                        <skip>true</skip>
+                    </configuration>
+                </reportSet>
+            </reportSets>
+        </plugin>
+			<plugin>
+				<groupId>com.github.spotbugs</groupId>
+				<artifactId>spotbugs-maven-plugin</artifactId>
+				<version>3.1.8</version>
+				<configuration>
+					<effort>Max</effort>
+					<threshold>Low</threshold>
+					<xmlOutput>true</xmlOutput>
+					<!--<excludeFilterFile>spotbugsrulefilter.xml</excludeFilterFile>-->
+					<includeTests>false</includeTests>
+				</configuration>
+			</plugin>
+		</plugins>
+	</reporting>
+
+	<profiles>
+		<profile>
+			<id>ut</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<configuration>
+							<includes>
+
+								<include>**/Calculater.java</include>
+
+							</includes>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+	<distributionManagement>
+		<repository>
+			<id>artifactory</id>
+			<name>Calculator_CI_Builds</name>
+			<url>http://localhost:8081/artifactory/Calculator_CI_Builds</url>
+		</repository>
+	</distributionManagement>
+
+
+</project>
+
+
+<!-- clean compile site test -Put jacoco:report sonar:sonar war:war deploy --> 
